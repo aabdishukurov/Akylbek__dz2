@@ -1,0 +1,44 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.header {
+  height: 60px;
+  background-color: black;
+  width: 100%;
+}
+
+.content {
+  height: calc(100vh - 120px);
+  width: 100%;
+}
+
+.container {
+  width: 1000px;
+  height: 100%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.footer {
+  height: 60px;
+  background-color: black;
+  width: 100%;
+}
+
+.linkList {
+  display: flex;
+  gap: 10px;
+}
+
+.link {
+  color: #fff;
+  font-size: 25px;
+}
