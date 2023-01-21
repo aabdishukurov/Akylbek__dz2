@@ -1,25 +1,22 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ModalAdd from "../components/ModalAdd"
-import TodoCard from "../components/TodoCard"
 import TodoList from "../components/TodoList"
 import Button from "../components/ui/Button"
 import Input from "../components/ui/Input"
 
 import classes from './todo.module.css'
 
-const data = [
-  {title: 'Важно', description: 'Сходить в магазин', date: 'Сегодня'}
-]
-
 const TodoPage = () => {
 
-  const [todoList, setTodoList] = useState(data)
+  const [todoList, setTodoList] = useState([])
   const [inputValue, setInputValue] = useState('')
   const [dataForm, setDataForm] = useState({
     title: '',
     description: '',
   })
   const [isShow, setIsShow] = useState(false)
+
+  const [ count, setCount ] = useState(0)
 
   const handleOnChange = (e) => {
     setDataForm(prev => {
@@ -36,7 +33,7 @@ const TodoPage = () => {
 
   const submitData = () => {
     setTodoList(prev => {
-      return [...prev, {...dataForm, date: Date()}]
+      return [...prev, {...dataForm, date: Date(), completed: false}]
     })
     handleShow()
   }
@@ -53,12 +50,24 @@ const TodoPage = () => {
     handleShow()
   }
 
+  const completedOnChange = (date) => {
+    const newList = todoList.map((todo) => {
+      if (todo.date === date) {
+        return {...todo, completed: !todo.completed}
+      } else {
+        return todo
+      }
+    })
+    setTodoList(newList)
+  }
+
   const editTodo = (todo) => {
     setIsShow(true)
     setDataForm({
       title: todo.title, 
       description: todo.description,
-      date: todo.date
+      date: todo.date,
+      completed: todo.completed
     })
   }
 
@@ -68,6 +77,17 @@ const TodoPage = () => {
     })
     setTodoList(newList)
   }
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('data'))
+    if (data.length !== 0) {
+      setTodoList(data)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('data', JSON.stringify(todoList))
+  }, [ todoList ])
 
   return (
     <>
@@ -86,7 +106,7 @@ const TodoPage = () => {
         </ModalAdd>
       )}
       <Input propsClass={'inputSearch'} value={inputValue} handleOnChange={(e) => setInputValue(e.target.value)}/>
-      <TodoList todoList={todoList} editTodo={editTodo} deleteTodo={deleteTodo}/>
+      <TodoList todoList={todoList} editTodo={editTodo} deleteTodo={deleteTodo} completedOnChange={completedOnChange}/>
     </>
   )
 }
