@@ -79,16 +79,15 @@ const TodoPage = () => {
   }
 
   useEffect(() => {
+    localStorage.setItem('data', JSON.stringify(todoList))
+  }, [ todoList ])
+
+  useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'))
     if (data.length !== 0) {
       setTodoList(data)
     }
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('data', JSON.stringify(todoList))
-  }, [ todoList ])
-
   return (
     <>
       <Button handleDo={handleShow}>Добавить таск</Button>
