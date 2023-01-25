@@ -78,19 +78,26 @@ const TodoPage = () => {
     setTodoList(newList)
   }
 
+  const clearTodo = () => {
+    const filter = todoList.filter(e => !e.completed)
+    setTodoList(filter)
+  }
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('data'))
+    if (data.length > 0) {
+      setTodoList(data)
+    }
+  }, [])
+
   useEffect(() => {
     localStorage.setItem('data', JSON.stringify(todoList))
   }, [ todoList ])
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('data'))
-    if (data.length !== 0) {
-      setTodoList(data)
-    }
-  }, [])
   return (
     <>
       <Button handleDo={handleShow}>Добавить таск</Button>
+      {todoList.length > 0 && <button onClick={clearTodo}>Очистить</button>}
       {isShow && (
         <ModalAdd closeWindow={handleShow}>
           <Input name='title' propsClass={'modalInput'} value={dataForm.title} handleOnChange={handleOnChange}/>
