@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { Context } from "../App"
 import ModalAdd from "../components/ModalAdd"
+import Pagination from "../components/Pagination"
 import TodoList from "../components/TodoList"
 import Button from "../components/ui/Button"
 import Input from "../components/ui/Input"
@@ -15,8 +17,9 @@ const TodoPage = () => {
     description: '',
   })
   const [isShow, setIsShow] = useState(false)
-
+  const [ offset, setOffset ] = useState(0)
   const [ count, setCount ] = useState(0)
+  const { search, setSearch } = useContext(Context)
 
   const handleOnChange = (e) => {
     setDataForm(prev => {
@@ -78,14 +81,9 @@ const TodoPage = () => {
     setTodoList(newList)
   }
 
-  const clearTodo = () => {
-    const filter = todoList.filter(e => !e.completed)
-    setTodoList(filter)
-  }
-
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'))
-    if (data.length > 0) {
+    if (data.length !== 0) {
       setTodoList(data)
     }
   }, [])
@@ -94,10 +92,17 @@ const TodoPage = () => {
     localStorage.setItem('data', JSON.stringify(todoList))
   }, [ todoList ])
 
+  const handleFilter = () => {
+    const newState = todoList.filter((item) => item.completed === false)
+    setTodoList(newState)
+  }
+
+  const searchArray = () => todoList.filter(item => item.title.toLowerCase().includes(search.toLowerCase()))
+
   return (
     <>
       <Button handleDo={handleShow}>Добавить таск</Button>
-      {todoList.length > 0 && <button onClick={clearTodo}>Очистить</button>}
+      <Button handleDo={handleFilter}>Очистить выполненные</Button>
       {isShow && (
         <ModalAdd closeWindow={handleShow}>
           <Input name='title' propsClass={'modalInput'} value={dataForm.title} handleOnChange={handleOnChange}/>
@@ -111,8 +116,9 @@ const TodoPage = () => {
           }
         </ModalAdd>
       )}
-      <Input propsClass={'inputSearch'} value={inputValue} handleOnChange={(e) => setInputValue(e.target.value)}/>
-      <TodoList todoList={todoList} editTodo={editTodo} deleteTodo={deleteTodo} completedOnChange={completedOnChange}/>
+      <Input propsClass={'inputSearch'} value={search} handleOnChange={(e) => setSearch(e.target.value)}/>
+      <TodoList todoList={searchArray().slice(offset, offset + 2)} editTodo={editTodo} deleteTodo={deleteTodo} completedOnChange={completedOnChange}/>
+      <Pagination limit={2} offset={offset} length={todoList.length} setOffset={setOffset}/>
     </>
   )
 }
