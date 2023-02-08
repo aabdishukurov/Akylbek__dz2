@@ -27,10 +27,5 @@ export default App;
 
 
 
-const obj = {
-  John: 19;
-  Adil: 23;
-  Islam: 20;
-  "name", "age"
-}
+
 
